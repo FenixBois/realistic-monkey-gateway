@@ -1,7 +1,3 @@
 /data/node_red/*
 !/data/node_red/flows.json
-!/data/node_red/package-lock.json
-!/data/node_red/package.json
-!/data/node_red/.config.nodes.json
-!/data/node_red/.config.nodes.json.backup
 .idea/
