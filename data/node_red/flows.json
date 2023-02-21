@@ -22,5 +22,39 @@
         "x": 320,
         "y": 120,
         "wires": []
+    },
+    {
+        "id": "626a6a9ad285f01d",
+        "type": "ui_slider",
+        "z": "5cd67813776a9297",
+        "name": "",
+        "label": "slider",
+        "tooltip": "",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "outs": "all",
+        "topic": "topic",
+        "topicType": "msg",
+        "min": 0,
+        "max": 10,
+        "step": 1,
+        "className": "",
+        "x": 450,
+        "y": 400,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b19b98cda6730b1d",
+        "type": "serial in",
+        "z": "5cd67813776a9297",
+        "x": 290,
+        "y": 360,
+        "wires": [
+            []
+        ]
     }
 ]
