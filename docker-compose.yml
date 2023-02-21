@@ -1,0 +1,8 @@
+services:
+  nodered:
+    hostname: nodered
+    image: nodered/node-red
+    ports:
+      - 1880:1880
+    volumes:
+      - ./data/node_red:/data
