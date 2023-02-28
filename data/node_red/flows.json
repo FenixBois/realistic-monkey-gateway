@@ -1,60 +1,251 @@
 [
     {
-        "id": "5cd67813776a9297",
+        "id": "8abcfa4285a64e28",
         "type": "tab",
-        "label": "Flow 1",
+        "label": "Init",
         "disabled": false,
         "info": "",
         "env": []
     },
     {
-        "id": "36373d2cdecc56ac",
+        "id": "5cd67813776a9297",
+        "type": "tab",
+        "label": "Receive data",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "1f7fe0dff64a8457",
+        "type": "tab",
+        "label": "Aggregate data",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "6d09873edb3e3534",
+        "type": "serial-port",
+        "serialport": "/dev/tty.usbmodem1101",
+        "serialbaud": "9600",
+        "databits": "8",
+        "parity": "none",
+        "stopbits": "1",
+        "waitfor": "",
+        "dtr": "none",
+        "rts": "none",
+        "cts": "none",
+        "dsr": "none",
+        "newline": "\\n",
+        "bin": "false",
+        "out": "char",
+        "addchar": "",
+        "responsetimeout": "10000"
+    },
+    {
+        "id": "36c212ac3767eebf",
+        "type": "serial-port",
+        "serialport": "/dev/tty.usbmodem1101",
+        "serialbaud": "9600",
+        "databits": "8",
+        "parity": "none",
+        "stopbits": "1",
+        "waitfor": "",
+        "dtr": "none",
+        "rts": "none",
+        "cts": "none",
+        "dsr": "none",
+        "newline": "\\n",
+        "bin": "false",
+        "out": "char",
+        "addchar": "",
+        "responsetimeout": "10000"
+    },
+    {
+        "id": "c628f8e8d8157672",
+        "type": "sqlitedb",
+        "db": "/Users/martin/projects/uu/biot/gateway/data/node_red/data.sqlite",
+        "mode": "RWC"
+    },
+    {
+        "id": "e0eda3726175cf19",
+        "type": "sqlite",
+        "z": "8abcfa4285a64e28",
+        "mydb": "c628f8e8d8157672",
+        "sqlquery": "fixed",
+        "sql": "CREATE TABLE IF NOT EXISTS data\n(\n    datetime    INTEGER default current_timestamp not null\n        constraint data_pk\n            primary key,\n    temperature REAL                              not null,\n    humidity    REAL                              not null\n);\n\n",
+        "name": "Create data table if not exists",
+        "x": 440,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c9fec765f0aa752d",
+        "type": "inject",
+        "z": "8abcfa4285a64e28",
+        "name": "App started",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 210,
+        "y": 120,
+        "wires": [
+            [
+                "e0eda3726175cf19"
+            ]
+        ]
+    },
+    {
+        "id": "ed86ef97bebd5f05",
+        "type": "serial in",
+        "z": "5cd67813776a9297",
+        "name": "Arduino",
+        "serial": "36c212ac3767eebf",
+        "x": 290,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3bb7ef235c3a8e07",
+        "type": "sqlite",
+        "z": "5cd67813776a9297",
+        "mydb": "c628f8e8d8157672",
+        "sqlquery": "msg.topic",
+        "sql": "INSERT INTO data (temperature, humidity)\nVALUES (?, ?)",
+        "name": "Insert data",
+        "x": 930,
+        "y": 300,
+        "wires": [
+            [
+                "f7a84e6bd0a4370c"
+            ]
+        ]
+    },
+    {
+        "id": "8ff8f12f8e55538a",
+        "type": "function",
+        "z": "5cd67813776a9297",
+        "name": "Prepare statement",
+        "func": "var prev = msg\nmsg = {}\nmsg.topic = `INSERT INTO data (temperature, humidity) VALUES ($temp, $humid)`\nmsg.payload = [prev.payload.temp, prev.payload.hum]\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 710,
+        "y": 300,
+        "wires": [
+            [
+                "3bb7ef235c3a8e07"
+            ]
+        ]
+    },
+    {
+        "id": "e7c59655dcdf1f86",
+        "type": "json",
+        "z": "5cd67813776a9297",
+        "name": "Parse json",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 490,
+        "y": 300,
+        "wires": [
+            [
+                "8ff8f12f8e55538a"
+            ]
+        ]
+    },
+    {
+        "id": "115e425a0919973d",
+        "type": "inject",
+        "z": "5cd67813776a9297",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "120",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 320,
+        "wires": [
+            [
+                "2229a4de2e7944da"
+            ]
+        ]
+    },
+    {
+        "id": "2229a4de2e7944da",
+        "type": "function",
+        "z": "5cd67813776a9297",
+        "name": "Generate mock data",
+        "func": "const temp = (Math.random() * 60) - 30;\nconst hum = (Math.random() * 80);\nreturn {payload: JSON.stringify({temp, hum})};",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 260,
+        "y": 380,
+        "wires": [
+            [
+                "e7c59655dcdf1f86"
+            ]
+        ]
+    },
+    {
+        "id": "f7a84e6bd0a4370c",
         "type": "debug",
         "z": "5cd67813776a9297",
-        "name": "debug 1",
+        "name": "debug 2",
         "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
-        "complete": "false",
+        "complete": "\"inserted new data at \" & $moment()\t",
+        "targetType": "jsonata",
         "statusVal": "",
         "statusType": "auto",
-        "x": 320,
-        "y": 120,
+        "x": 1120,
+        "y": 300,
         "wires": []
     },
     {
-        "id": "626a6a9ad285f01d",
-        "type": "ui_slider",
+        "id": "9313ff5e0af04abf",
+        "type": "comment",
         "z": "5cd67813776a9297",
-        "name": "",
-        "label": "slider",
-        "tooltip": "",
-        "order": 0,
-        "width": 0,
-        "height": 0,
-        "passthru": true,
-        "outs": "all",
-        "topic": "topic",
-        "topicType": "msg",
-        "min": 0,
-        "max": 10,
-        "step": 1,
-        "className": "",
-        "x": 450,
-        "y": 400,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "b19b98cda6730b1d",
-        "type": "serial in",
-        "z": "5cd67813776a9297",
-        "x": 290,
-        "y": 360,
-        "wires": [
-            []
-        ]
+        "name": "Use arduino node instead when possible",
+        "info": "When arduino is connected, \nuse the Arduino node instead of generating mock data",
+        "x": 220,
+        "y": 200,
+        "wires": []
     }
 ]
