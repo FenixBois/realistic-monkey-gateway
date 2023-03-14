@@ -32,6 +32,14 @@
         "env": []
     },
     {
+        "id": "e01a8318facb448e",
+        "type": "tab",
+        "label": "Send aggregated data",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
         "id": "78d678c245e7c6f5",
         "type": "tab",
         "label": "Cleanup",
@@ -123,59 +131,19 @@
         ]
     },
     {
-        "id": "ae65e1cb0570f066",
-        "type": "file in",
-        "z": "a456f3115b876e96",
-        "name": "Read gateway info",
-        "filename": "GATEWAY_INFO",
-        "filenameType": "env",
-        "format": "utf8",
-        "chunk": false,
-        "sendError": false,
-        "encoding": "none",
-        "allProps": false,
-        "x": 630,
-        "y": 280,
-        "wires": [
-            [
-                "e7ebaf9d80abef60"
-            ]
-        ]
-    },
-    {
-        "id": "1548092973104a67",
-        "type": "file in",
-        "z": "a456f3115b876e96",
-        "name": "Read gateway authcode",
-        "filename": "GATEWAY-auth-code",
-        "filenameType": "env",
-        "format": "utf8",
-        "chunk": false,
-        "sendError": false,
-        "encoding": "none",
-        "allProps": false,
-        "x": 190,
-        "y": 200,
-        "wires": [
-            [
-                "417f06b5e08fac4a"
-            ]
-        ]
-    },
-    {
         "id": "5c0e1257bcd81b94",
         "type": "catch",
         "z": "a456f3115b876e96",
         "name": "Gateway not authed",
         "scope": [
-            "1548092973104a67"
+            "9e3a3facae4d9986"
         ],
         "uncaught": false,
-        "x": 350,
-        "y": 280,
+        "x": 410,
+        "y": 180,
         "wires": [
             [
-                "ae65e1cb0570f066"
+                "805095ea76578cfc"
             ]
         ]
     },
@@ -192,8 +160,8 @@
         "targetType": "jsonata",
         "statusVal": "",
         "statusType": "auto",
-        "x": 750,
-        "y": 200,
+        "x": 930,
+        "y": 120,
         "wires": []
     },
     {
@@ -212,8 +180,8 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 480,
-        "y": 200,
+        "x": 660,
+        "y": 120,
         "wires": [
             [
                 "b8de391e0098e3bc"
@@ -236,8 +204,8 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 890,
-        "y": 280,
+        "x": 950,
+        "y": 180,
         "wires": [
             [
                 "8dde2e9c04d18ce1"
@@ -263,10 +231,85 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 1140,
-        "y": 280,
+        "x": 1200,
+        "y": 180,
+        "wires": [
+            [
+                "4026011227fd5951"
+            ]
+        ]
+    },
+    {
+        "id": "c4b636062ea0a9b0",
+        "type": "inject",
+        "z": "a456f3115b876e96",
+        "name": "Every 30 minutes",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1800",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 110,
+        "y": 120,
         "wires": [
             []
+        ]
+    },
+    {
+        "id": "4026011227fd5951",
+        "type": "sqlite",
+        "z": "a456f3115b876e96",
+        "mydb": "c628f8e8d8157672",
+        "sqlquery": "msg.topic",
+        "sql": "",
+        "name": "Save authcode",
+        "x": 1440,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "805095ea76578cfc",
+        "type": "sqlite",
+        "z": "a456f3115b876e96",
+        "mydb": "c628f8e8d8157672",
+        "sqlquery": "msg.topic",
+        "sql": "",
+        "name": "Read gateway info",
+        "x": 650,
+        "y": 180,
+        "wires": [
+            [
+                "e7ebaf9d80abef60"
+            ]
+        ]
+    },
+    {
+        "id": "9e3a3facae4d9986",
+        "type": "sqlite",
+        "z": "a456f3115b876e96",
+        "mydb": "c628f8e8d8157672",
+        "sqlquery": "msg.topic",
+        "sql": "",
+        "name": "Read authcode",
+        "x": 400,
+        "y": 120,
+        "wires": [
+            [
+                "417f06b5e08fac4a"
+            ]
         ]
     },
     {
@@ -437,27 +480,12 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 860,
-        "y": 380,
+        "x": 880,
+        "y": 340,
         "wires": [
             [
-                "de9f2421248470eb",
-                "6e57f44f8bd45613"
+                "4e56a7c5ba6fbca8"
             ]
-        ]
-    },
-    {
-        "id": "51c746350f67f3d5",
-        "type": "sqlite",
-        "z": "1f7fe0dff64a8457",
-        "mydb": "c628f8e8d8157672",
-        "sqlquery": "msg.topic",
-        "sql": "",
-        "name": "Mark data as sent",
-        "x": 1730,
-        "y": 720,
-        "wires": [
-            []
         ]
     },
     {
@@ -467,80 +495,14 @@
         "mydb": "c628f8e8d8157672",
         "sqlquery": "fixed",
         "sql": "SELECT *\nFROM data\nWHERE sentAt IS NULL\nAND (unixepoch('now') - unixepoch(date)) >= 120\n  AND (\n    (unixepoch(date) - (SELECT unixepoch(MIN(date))\n                           FROM data\n                           WHERE sentAt IS NULL)\n                           ) / 60) <= 2",
-        "name": "Fetch 2 minutes of data since first unsent data, only want",
-        "x": 310,
+        "name": "Fetch 2 minutes of data since first not aggregated data, only want",
+        "x": 340,
         "y": 140,
         "wires": [
             [
                 "31e7efd9b45a34eb"
             ]
         ]
-    },
-    {
-        "id": "de9f2421248470eb",
-        "type": "join",
-        "z": "1f7fe0dff64a8457",
-        "name": "Join raw and aggregated data",
-        "mode": "custom",
-        "build": "object",
-        "property": "payload",
-        "propertyType": "msg",
-        "key": "topic",
-        "joiner": "\\n",
-        "joinerType": "str",
-        "accumulate": false,
-        "timeout": "",
-        "count": "2",
-        "reduceRight": false,
-        "reduceExp": "",
-        "reduceInit": "",
-        "reduceInitType": "",
-        "reduceFixup": "",
-        "x": 1210,
-        "y": 520,
-        "wires": [
-            [
-                "d96ad74aa2fada89",
-                "6e57f44f8bd45613"
-            ]
-        ]
-    },
-    {
-        "id": "d3685399ba90386b",
-        "type": "function",
-        "z": "1f7fe0dff64a8457",
-        "name": "Prepare for join",
-        "func": "return {topic: 'rawData', payload: msg.payload}",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 900,
-        "y": 520,
-        "wires": [
-            [
-                "de9f2421248470eb",
-                "6e57f44f8bd45613"
-            ]
-        ]
-    },
-    {
-        "id": "6e57f44f8bd45613",
-        "type": "debug",
-        "z": "1f7fe0dff64a8457",
-        "name": "Debug complete message",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1720,
-        "y": 140,
-        "wires": []
     },
     {
         "id": "31e7efd9b45a34eb",
@@ -606,45 +568,205 @@
         "targetType": "jsonata",
         "statusVal": "",
         "statusType": "auto",
-        "x": 520,
-        "y": 380,
+        "x": 800,
+        "y": 200,
         "wires": []
     },
     {
-        "id": "f70962553d736010",
+        "id": "d3685399ba90386b",
         "type": "function",
         "z": "1f7fe0dff64a8457",
-        "name": "Prepare update query",
-        "func": "var prev = msg\nnode.log(prev)\nmsg = {}\nvar ids = prev.payload.rawData.map(d => d.id)\nvar idsStr = ids.map((_, i) => `$id${i}`).join(\", \")\nmsg.topic = `UPDATE data SET sentAt=datetime('now') WHERE id in (${idsStr})`\nmsg.payload = ids\nreturn msg;",
+        "name": "Keep raw data",
+        "func": "return {topic: 'rawData', payload: msg.payload}",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1720,
-        "y": 620,
+        "x": 900,
+        "y": 400,
         "wires": [
             [
-                "51c746350f67f3d5"
+                "394bf3cb66669c20"
             ]
         ]
     },
     {
-        "id": "517801c981ba71ad",
-        "type": "comment",
+        "id": "394bf3cb66669c20",
+        "type": "join",
         "z": "1f7fe0dff64a8457",
-        "name": "TODO send http req",
-        "info": "",
-        "x": 1570,
-        "y": 380,
+        "name": "",
+        "mode": "auto",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": true,
+        "timeout": "",
+        "count": "",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 1450,
+        "y": 400,
+        "wires": [
+            [
+                "e07acc2fa9a81b65"
+            ]
+        ]
+    },
+    {
+        "id": "4e56a7c5ba6fbca8",
+        "type": "sqlite",
+        "z": "1f7fe0dff64a8457",
+        "mydb": "c628f8e8d8157672",
+        "sqlquery": "msg.topic",
+        "sql": "",
+        "name": "Save aggregated data",
+        "x": 1200,
+        "y": 340,
+        "wires": [
+            [
+                "394bf3cb66669c20"
+            ]
+        ]
+    },
+    {
+        "id": "e07acc2fa9a81b65",
+        "type": "sqlite",
+        "z": "1f7fe0dff64a8457",
+        "mydb": "c628f8e8d8157672",
+        "sqlquery": "msg.topic",
+        "sql": "",
+        "name": "Mark data as aggregated",
+        "x": 1730,
+        "y": 400,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "1b96ac2df139d54c",
+        "type": "sqlite",
+        "z": "e01a8318facb448e",
+        "mydb": "c628f8e8d8157672",
+        "sqlquery": "msg.topic",
+        "sql": "",
+        "name": "Read aggregated data",
+        "x": 340,
+        "y": 180,
+        "wires": [
+            [
+                "1b3df56e02ae00f5"
+            ]
+        ]
+    },
+    {
+        "id": "e820de3e4f6f9668",
+        "type": "debug",
+        "z": "e01a8318facb448e",
+        "name": "Debug no data",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "\"ignoring empty data\"",
+        "targetType": "jsonata",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 900,
+        "y": 180,
         "wires": []
     },
     {
-        "id": "5b5522a07dfd6f32",
+        "id": "1b3df56e02ae00f5",
+        "type": "switch",
+        "z": "e01a8318facb448e",
+        "name": "Take if not empty",
+        "property": "$count(payload)",
+        "propertyType": "jsonata",
+        "rules": [
+            {
+                "t": "gt",
+                "v": "0",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 630,
+        "y": 180,
+        "wires": [
+            [
+                "33346f24098cc5e7"
+            ],
+            [
+                "e820de3e4f6f9668"
+            ]
+        ]
+    },
+    {
+        "id": "33346f24098cc5e7",
+        "type": "function",
+        "z": "e01a8318facb448e",
+        "name": "Use message",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 740,
+        "y": 280,
+        "wires": [
+            [
+                "adcad3466c8f421b"
+            ]
+        ]
+    },
+    {
+        "id": "8f6737b052d96c69",
+        "type": "inject",
+        "z": "e01a8318facb448e",
+        "name": "Every 30s",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "30",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 90,
+        "y": 180,
+        "wires": [
+            [
+                "1b96ac2df139d54c"
+            ]
+        ]
+    },
+    {
+        "id": "adcad3466c8f421b",
         "type": "http request",
-        "z": "1f7fe0dff64a8457",
-        "name": "",
-        "method": "GET",
+        "z": "e01a8318facb448e",
+        "name": "Send data",
+        "method": "POST",
         "ret": "txt",
         "paytoqs": "ignore",
         "url": "",
@@ -655,60 +777,26 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 1650,
-        "y": 420,
+        "x": 930,
+        "y": 280,
         "wires": [
             [
-                "d96ad74aa2fada89"
+                "cc10b69c3f96ec46"
             ]
         ]
     },
     {
-        "id": "d96ad74aa2fada89",
-        "type": "join",
-        "z": "1f7fe0dff64a8457",
-        "name": "Join result and rawData",
-        "mode": "custom",
-        "build": "object",
-        "property": "payload",
-        "propertyType": "msg",
-        "key": "topic",
-        "joiner": "\\n",
-        "joinerType": "str",
-        "accumulate": false,
-        "timeout": "",
-        "count": "2",
-        "reduceRight": false,
-        "reduceExp": "",
-        "reduceInit": "",
-        "reduceInitType": "",
-        "reduceFixup": "",
-        "x": 1710,
-        "y": 520,
+        "id": "cc10b69c3f96ec46",
+        "type": "sqlite",
+        "z": "e01a8318facb448e",
+        "mydb": "c628f8e8d8157672",
+        "sqlquery": "msg.topic",
+        "sql": "",
+        "name": "Mark data as sent",
+        "x": 1150,
+        "y": 280,
         "wires": [
-            [
-                "f70962553d736010",
-                "6e57f44f8bd45613"
-            ]
-        ]
-    },
-    {
-        "id": "9bee953c035d0ed0",
-        "type": "function",
-        "z": "1f7fe0dff64a8457",
-        "name": "TODO Prepare http req",
-        "func": "\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 1450,
-        "y": 420,
-        "wires": [
-            [
-                "5b5522a07dfd6f32"
-            ]
+            []
         ]
     },
     {
