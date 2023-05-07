@@ -172,53 +172,12 @@
         ]
     },
     {
-        "id": "b8de391e0098e3bc",
-        "type": "debug",
-        "z": "a456f3115b876e96",
-        "name": "gateway registered",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "\"Gateway already registered\"",
-        "targetType": "jsonata",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1170,
-        "y": 120,
-        "wires": []
-    },
-    {
-        "id": "417f06b5e08fac4a",
-        "type": "http request",
-        "z": "a456f3115b876e96",
-        "name": "Verify gateway authed",
-        "method": "GET",
-        "ret": "txt",
-        "paytoqs": "query",
-        "url": "localhost:3000/api/trpc/station.verify",
-        "tls": "",
-        "persist": false,
-        "proxy": "",
-        "insecureHTTPParser": false,
-        "authType": "",
-        "senderr": false,
-        "headers": [],
-        "x": 900,
-        "y": 120,
-        "wires": [
-            [
-                "b8de391e0098e3bc"
-            ]
-        ]
-    },
-    {
         "id": "e7ebaf9d80abef60",
         "type": "http request",
         "z": "a456f3115b876e96",
         "name": "Register gateway",
         "method": "POST",
-        "ret": "txt",
+        "ret": "obj",
         "paytoqs": "ignore",
         "url": "localhost:3000/api/trpc/station.register",
         "tls": "",
@@ -232,7 +191,7 @@
         "y": 180,
         "wires": [
             [
-                "3e94cb486371aa60"
+                "81c267c34c603b54"
             ]
         ]
     },
@@ -273,8 +232,8 @@
         "sqlquery": "msg.topic",
         "sql": "",
         "name": "Save authcode",
-        "x": 980,
-        "y": 460,
+        "x": 920,
+        "y": 280,
         "wires": [
             []
         ]
@@ -326,7 +285,7 @@
         "y": 120,
         "wires": [
             [
-                "417f06b5e08fac4a"
+                "b8de391e0098e3bc"
             ]
         ]
     },
@@ -360,8 +319,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1020,
-        "y": 400,
+        "x": 660,
+        "y": 280,
         "wires": [
             [
                 "4026011227fd5951"
@@ -369,20 +328,21 @@
         ]
     },
     {
-        "id": "3e94cb486371aa60",
-        "type": "json",
+        "id": "b8de391e0098e3bc",
+        "type": "debug",
         "z": "a456f3115b876e96",
-        "name": "Decode result body",
-        "property": "payload",
-        "action": "obj",
-        "pretty": false,
-        "x": 990,
-        "y": 320,
-        "wires": [
-            [
-                "81c267c34c603b54"
-            ]
-        ]
+        "name": "gateway registered",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "\"Gateway already registered\"",
+        "targetType": "jsonata",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 870,
+        "y": 120,
+        "wires": []
     },
     {
         "id": "ed86ef97bebd5f05",
@@ -568,8 +528,8 @@
         "sqlquery": "fixed",
         "sql": "SELECT *\nFROM data\nWHERE aggregatedAt IS NULL\n  AND (unixepoch('now') - unixepoch(date)) >= 120\n  AND\n              (unixepoch(date) - (SELECT unixepoch(MIN(date))\n                                  FROM data\n                                  WHERE aggregatedAt IS NULL)\n                  )  <= 120;",
         "name": "Fetch 2 minutes of data since first not aggregated data, only want",
-        "x": 340,
-        "y": 140,
+        "x": 460,
+        "y": 60,
         "wires": [
             [
                 "31e7efd9b45a34eb"
@@ -632,8 +592,8 @@
         "sqlquery": "msg.topic",
         "sql": "",
         "name": "Save aggregated data",
-        "x": 440,
-        "y": 380,
+        "x": 860,
+        "y": 300,
         "wires": [
             [
                 "26cac60adb2ce17c"
@@ -648,8 +608,8 @@
         "sqlquery": "msg.topic",
         "sql": "",
         "name": "Mark data as aggregated",
-        "x": 530,
-        "y": 660,
+        "x": 850,
+        "y": 380,
         "wires": [
             []
         ]
@@ -665,8 +625,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 600,
-        "y": 580,
+        "x": 520,
+        "y": 380,
         "wires": [
             [
                 "e07acc2fa9a81b65"
@@ -679,9 +639,9 @@
         "z": "e01a8318facb448e",
         "mydb": "c628f8e8d8157672",
         "sqlquery": "fixed",
-        "sql": "",
+        "sql": "SELECT * FROM aggregated_data WHERE sentAt is NULL ORDER BY date LIMIT 100",
         "name": "Read aggregated data (max 100)",
-        "x": 380,
+        "x": 360,
         "y": 180,
         "wires": [
             [
@@ -702,7 +662,7 @@
         "targetType": "jsonata",
         "statusVal": "",
         "statusType": "auto",
-        "x": 900,
+        "x": 920,
         "y": 180,
         "wires": []
     },
@@ -726,14 +686,14 @@
         "checkall": "true",
         "repair": false,
         "outputs": 2,
-        "x": 630,
+        "x": 670,
         "y": 180,
         "wires": [
             [
                 "e820de3e4f6f9668"
             ],
             [
-                "33346f24098cc5e7"
+                "918adb3cfcc7a145"
             ]
         ]
     },
@@ -741,15 +701,15 @@
         "id": "33346f24098cc5e7",
         "type": "function",
         "z": "e01a8318facb448e",
-        "name": "Use message",
-        "func": "\nreturn msg;",
+        "name": "Prepare request body",
+        "func": "\nconst message = {\n    payload:{\n    json: {\n        token: msg.payload[0].value,\n        data: msg.data\n    },\n    },\n    data_ids: msg.data.map(({ id }) => id)\n};\nreturn message;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 300,
-        "y": 280,
+        "x": 480,
+        "y": 380,
         "wires": [
             [
                 "adcad3466c8f421b"
@@ -770,14 +730,14 @@
                 "vt": "str"
             }
         ],
-        "repeat": "30",
+        "repeat": "",
         "crontab": "",
-        "once": true,
+        "once": false,
         "onceDelay": 0.1,
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 90,
+        "x": 80,
         "y": 180,
         "wires": [
             [
@@ -791,21 +751,21 @@
         "z": "e01a8318facb448e",
         "name": "Send data",
         "method": "POST",
-        "ret": "txt",
+        "ret": "obj",
         "paytoqs": "ignore",
-        "url": "",
+        "url": "localhost:3000/api/trpc/station.uploadData",
         "tls": "",
         "persist": false,
         "proxy": "",
         "insecureHTTPParser": false,
         "authType": "",
-        "senderr": false,
+        "senderr": true,
         "headers": [],
-        "x": 490,
-        "y": 280,
+        "x": 750,
+        "y": 380,
         "wires": [
             [
-                "cc10b69c3f96ec46"
+                "2a2e3761707d83f4"
             ]
         ]
     },
@@ -817,10 +777,64 @@
         "sqlquery": "msg.topic",
         "sql": "",
         "name": "Mark data as sent",
-        "x": 710,
-        "y": 280,
+        "x": 770,
+        "y": 480,
         "wires": [
             []
+        ]
+    },
+    {
+        "id": "e219bd3555195adb",
+        "type": "sqlite",
+        "z": "e01a8318facb448e",
+        "mydb": "c628f8e8d8157672",
+        "sqlquery": "fixed",
+        "sql": "SELECT value FROM settings WHERE id='authcode'",
+        "name": "Read authcode",
+        "x": 760,
+        "y": 300,
+        "wires": [
+            [
+                "33346f24098cc5e7"
+            ]
+        ]
+    },
+    {
+        "id": "2a2e3761707d83f4",
+        "type": "function",
+        "z": "e01a8318facb448e",
+        "name": "Prepare update query",
+        "func": "const topic = \"UPDATE aggregated_data SET sentAt=datetime() WHERE id IN (\" + msg.data_ids.map((_, i) => \"$id\" +i).join(\",\") + \")\"\nreturn {\n    topic,\n    payload: msg.data_ids\n};",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 480,
+        "wires": [
+            [
+                "cc10b69c3f96ec46"
+            ]
+        ]
+    },
+    {
+        "id": "918adb3cfcc7a145",
+        "type": "function",
+        "z": "e01a8318facb448e",
+        "name": "Rename data",
+        "func": "\nreturn {\n    data: msg.payload\n};",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 300,
+        "wires": [
+            [
+                "e219bd3555195adb"
+            ]
         ]
     },
     {
@@ -848,7 +862,8 @@
         "y": 80,
         "wires": [
             [
-                "435f1d661a26e23f"
+                "435f1d661a26e23f",
+                "d59ce3f0d3daa96f"
             ]
         ]
     },
@@ -857,11 +872,25 @@
         "type": "sqlite",
         "z": "78d678c245e7c6f5",
         "mydb": "c628f8e8d8157672",
-        "sqlquery": "msg.topic",
-        "sql": "",
-        "name": "Remove data sent at least 7 days ago",
-        "x": 550,
+        "sqlquery": "fixed",
+        "sql": "DELETE FROM data WHERE aggregatedAt IS NOT NULL AND  unixepoch('now') - unixepoch(aggregatedAt) > (60*60*24)",
+        "name": "Remove data aggregated at least 1 day ago",
+        "x": 570,
         "y": 80,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d59ce3f0d3daa96f",
+        "type": "sqlite",
+        "z": "78d678c245e7c6f5",
+        "mydb": "c628f8e8d8157672",
+        "sqlquery": "fixed",
+        "sql": "DELETE FROM aggregated_data WHERE sentAt IS NOT NULL AND unixepoch('now') - unixepoch(sentAt) >= (60*60*24*3)",
+        "name": "Remove Aggregated data sent at least 3 days ago",
+        "x": 590,
+        "y": 160,
         "wires": [
             []
         ]
