@@ -1,5 +1,13 @@
 [
     {
+        "id": "24bcb24c3775858e",
+        "type": "tab",
+        "label": "Dashboard",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
         "id": "8abcfa4285a64e28",
         "type": "tab",
         "label": "Init",
@@ -78,7 +86,7 @@
         "z": "8abcfa4285a64e28",
         "mydb": "c628f8e8d8157672",
         "sqlquery": "fixed",
-        "sql": "create table if not exists data\n(\n    id          integer not null\n        constraint id\n            primary key autoincrement,\n    humidity    real    not null,\n    temperature real    not null,\n    date        TIMESTAMP,\n    sentAt        TIMESTAMP default null\n);\n\n",
+        "sql": "create table if not exists data\n(\n    id           integer not null\n        constraint data_pk\n            primary key autoincrement,\n    humidity     real    not null,\n    temperature  real    not null,\n    date         TIMESTAMP,\n    aggregatedAt TIMESTAMP default null\n);\n\n",
         "name": "Create data table if not exists",
         "x": 500,
         "y": 200,
@@ -112,7 +120,8 @@
         "wires": [
             [
                 "e0eda3726175cf19",
-                "c5262e6969b8ad97"
+                "c5262e6969b8ad97",
+                "55b13ad2f306ef0c"
             ]
         ]
     },
@@ -122,10 +131,24 @@
         "z": "8abcfa4285a64e28",
         "mydb": "c628f8e8d8157672",
         "sqlquery": "fixed",
-        "sql": "",
+        "sql": "create table if not exists settings\n(\n    id    TEXT\n        constraint settings_pk\n            primary key,\n    value TEXT\n);\n\n",
         "name": "Create settings table if not exists",
         "x": 520,
         "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "55b13ad2f306ef0c",
+        "type": "sqlite",
+        "z": "8abcfa4285a64e28",
+        "mydb": "c628f8e8d8157672",
+        "sqlquery": "fixed",
+        "sql": "create table if not exists aggregated_data\n(\n    id          integer not null\n        constraint aggregated_data_pk\n            primary key autoincrement,\n    humidity    real,\n    temperature real,\n    date        TIMESTAMP,\n    sentAt      TIMESTAMP\n);",
+        "name": "Create aggregated data table",
+        "x": 500,
+        "y": 280,
         "wires": [
             []
         ]
@@ -136,10 +159,11 @@
         "z": "a456f3115b876e96",
         "name": "Gateway not authed",
         "scope": [
-            "9e3a3facae4d9986"
+            "417f06b5e08fac4a",
+            "48042c6be9db02f0"
         ],
         "uncaught": false,
-        "x": 410,
+        "x": 150,
         "y": 180,
         "wires": [
             [
@@ -160,7 +184,7 @@
         "targetType": "jsonata",
         "statusVal": "",
         "statusType": "auto",
-        "x": 930,
+        "x": 1170,
         "y": 120,
         "wires": []
     },
@@ -171,8 +195,8 @@
         "name": "Verify gateway authed",
         "method": "GET",
         "ret": "txt",
-        "paytoqs": "ignore",
-        "url": "",
+        "paytoqs": "query",
+        "url": "localhost:3000/api/trpc/station.verify",
         "tls": "",
         "persist": false,
         "proxy": "",
@@ -180,7 +204,7 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 660,
+        "x": 900,
         "y": 120,
         "wires": [
             [
@@ -193,49 +217,22 @@
         "type": "http request",
         "z": "a456f3115b876e96",
         "name": "Register gateway",
-        "method": "GET",
+        "method": "POST",
         "ret": "txt",
         "paytoqs": "ignore",
-        "url": "",
+        "url": "localhost:3000/api/trpc/station.register",
         "tls": "",
         "persist": false,
         "proxy": "",
         "insecureHTTPParser": false,
         "authType": "",
-        "senderr": false,
+        "senderr": true,
         "headers": [],
-        "x": 950,
+        "x": 870,
         "y": 180,
         "wires": [
             [
-                "8dde2e9c04d18ce1"
-            ]
-        ]
-    },
-    {
-        "id": "8dde2e9c04d18ce1",
-        "type": "change",
-        "z": "a456f3115b876e96",
-        "name": "",
-        "rules": [
-            {
-                "t": "set",
-                "p": "payload",
-                "pt": "msg",
-                "to": "",
-                "tot": "str"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 1200,
-        "y": 180,
-        "wires": [
-            [
-                "4026011227fd5951"
+                "3e94cb486371aa60"
             ]
         ]
     },
@@ -263,7 +260,9 @@
         "x": 110,
         "y": 120,
         "wires": [
-            []
+            [
+                "9e3a3facae4d9986"
+            ]
         ]
     },
     {
@@ -274,8 +273,8 @@
         "sqlquery": "msg.topic",
         "sql": "",
         "name": "Save authcode",
-        "x": 1440,
-        "y": 180,
+        "x": 980,
+        "y": 460,
         "wires": [
             []
         ]
@@ -285,14 +284,14 @@
         "type": "sqlite",
         "z": "a456f3115b876e96",
         "mydb": "c628f8e8d8157672",
-        "sqlquery": "msg.topic",
-        "sql": "",
+        "sqlquery": "fixed",
+        "sql": "SELECT value FROM settings WHERE id='identifier'",
         "name": "Read gateway info",
-        "x": 650,
+        "x": 390,
         "y": 180,
         "wires": [
             [
-                "e7ebaf9d80abef60"
+                "ea7461b748e6d25b"
             ]
         ]
     },
@@ -301,14 +300,87 @@
         "type": "sqlite",
         "z": "a456f3115b876e96",
         "mydb": "c628f8e8d8157672",
-        "sqlquery": "msg.topic",
-        "sql": "",
+        "sqlquery": "fixed",
+        "sql": "SELECT value FROM settings WHERE id='authcode'",
         "name": "Read authcode",
-        "x": 400,
+        "x": 380,
+        "y": 120,
+        "wires": [
+            [
+                "48042c6be9db02f0"
+            ]
+        ]
+    },
+    {
+        "id": "48042c6be9db02f0",
+        "type": "function",
+        "z": "a456f3115b876e96",
+        "name": "Extract value",
+        "func": "msg = {token: msg.payload[0].value};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 610,
         "y": 120,
         "wires": [
             [
                 "417f06b5e08fac4a"
+            ]
+        ]
+    },
+    {
+        "id": "ea7461b748e6d25b",
+        "type": "function",
+        "z": "a456f3115b876e96",
+        "name": "Prepare register values",
+        "func": "const identifier = msg.payload[0].value;\nmsg = {payload: {json: {identifier}}}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 640,
+        "y": 180,
+        "wires": [
+            [
+                "e7ebaf9d80abef60"
+            ]
+        ]
+    },
+    {
+        "id": "81c267c34c603b54",
+        "type": "function",
+        "z": "a456f3115b876e96",
+        "name": "Prepare SQL authcode insert",
+        "func": "\nmsg = {\n    topic: \"INSERT INTO settings (id, value) VALUES('authcode', $auth)\",\n    payload: [msg.payload.result.data.json]\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1020,
+        "y": 400,
+        "wires": [
+            [
+                "4026011227fd5951"
+            ]
+        ]
+    },
+    {
+        "id": "3e94cb486371aa60",
+        "type": "json",
+        "z": "a456f3115b876e96",
+        "name": "Decode result body",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 990,
+        "y": 320,
+        "wires": [
+            [
+                "81c267c34c603b54"
             ]
         ]
     },
@@ -494,7 +566,7 @@
         "z": "1f7fe0dff64a8457",
         "mydb": "c628f8e8d8157672",
         "sqlquery": "fixed",
-        "sql": "SELECT *\nFROM data\nWHERE sentAt IS NULL\nAND (unixepoch('now') - unixepoch(date)) >= 120\n  AND (\n    (unixepoch(date) - (SELECT unixepoch(MIN(date))\n                           FROM data\n                           WHERE sentAt IS NULL)\n                           ) / 60) <= 2",
+        "sql": "SELECT *\nFROM data\nWHERE aggregatedAt IS NULL\nAND (unixepoch('now') - unixepoch(date)) >= 120\n  AND (\n    (unixepoch(date) - (SELECT unixepoch(MIN(date))\n                           FROM data\n                           WHERE sentAt IS NULL)\n                           ) / 60) <= 2",
         "name": "Fetch 2 minutes of data since first not aggregated data, only want",
         "x": 340,
         "y": 140,
@@ -656,8 +728,8 @@
         "mydb": "c628f8e8d8157672",
         "sqlquery": "msg.topic",
         "sql": "",
-        "name": "Read aggregated data",
-        "x": 340,
+        "name": "Read aggregated data (max 100)",
+        "x": 380,
         "y": 180,
         "wires": [
             [
