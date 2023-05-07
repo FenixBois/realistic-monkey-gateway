@@ -545,15 +545,15 @@
         "id": "affde963e2980197",
         "type": "function",
         "z": "1f7fe0dff64a8457",
-        "name": "Aggretate",
-        "func": "const min_date = msg.payload.reduce(({ date: min }, { date }) => {\n    return min < date ? min : date;\n})\n\nconst length = msg.payload.length;\n\nconst sum_temp = msg.payload.reduce((acc, d) => acc + d.temperature, 0);\nconst avg_temp = sum_temp/ length;\n\nconst sum_hum = msg.payload.reduce((acc, d) => acc + d.humidity, 0);\nconst avg_hum = sum_hum / length;\n\nreturn {topic: 'grouped_data', payload: {avg_hum, avg_temp, min_date}};",
+        "name": "Aggretate and prepare statement",
+        "func": "const min_date = msg.payload.map(({ date }) => date).reduce((min,  date ) => {\n    return min < date ? min : date;\n})\n\nconst length = msg.payload.length;\n\nconst sum_temp = msg.payload.reduce((acc, d) => acc + d.temperature, 0);\nconst avg_temp = sum_temp/ length;\n\nconst sum_hum = msg.payload.reduce((acc, d) => acc + d.humidity, 0);\nconst avg_hum = sum_hum / length;\n\nreturn {\n    topic: 'INSERT INTO aggregated_data (humidity, temperature, date) VALUES ($hum, $temp, $date)', \n    payload: [avg_hum, avg_temp, min_date],\n    data_ids: msg.payload.map(({id}) => id)\n};",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 880,
-        "y": 340,
+        "x": 480,
+        "y": 300,
         "wires": [
             [
                 "4e56a7c5ba6fbca8"
@@ -566,7 +566,7 @@
         "z": "1f7fe0dff64a8457",
         "mydb": "c628f8e8d8157672",
         "sqlquery": "fixed",
-        "sql": "SELECT *\nFROM data\nWHERE aggregatedAt IS NULL\nAND (unixepoch('now') - unixepoch(date)) >= 120\n  AND (\n    (unixepoch(date) - (SELECT unixepoch(MIN(date))\n                           FROM data\n                           WHERE sentAt IS NULL)\n                           ) / 60) <= 2",
+        "sql": "SELECT *\nFROM data\nWHERE aggregatedAt IS NULL\n  AND (unixepoch('now') - unixepoch(date)) >= 120\n  AND\n              (unixepoch(date) - (SELECT unixepoch(MIN(date))\n                                  FROM data\n                                  WHERE aggregatedAt IS NULL)\n                  )  <= 120;",
         "name": "Fetch 2 minutes of data since first not aggregated data, only want",
         "x": 340,
         "y": 140,
@@ -585,7 +585,7 @@
         "propertyType": "jsonata",
         "rules": [
             {
-                "t": "gt",
+                "t": "eq",
                 "v": "0",
                 "vt": "str"
             },
@@ -596,34 +596,14 @@
         "checkall": "true",
         "repair": false,
         "outputs": 2,
-        "x": 490,
-        "y": 220,
+        "x": 150,
+        "y": 260,
         "wires": [
-            [
-                "b19779d3356f3809"
-            ],
             [
                 "d523750caf0f2c9e"
-            ]
-        ]
-    },
-    {
-        "id": "b19779d3356f3809",
-        "type": "function",
-        "z": "1f7fe0dff64a8457",
-        "name": "Use message",
-        "func": "\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 640,
-        "y": 340,
-        "wires": [
+            ],
             [
-                "affde963e2980197",
-                "d3685399ba90386b"
+                "affde963e2980197"
             ]
         ]
     },
@@ -640,56 +620,9 @@
         "targetType": "jsonata",
         "statusVal": "",
         "statusType": "auto",
-        "x": 800,
-        "y": 200,
+        "x": 420,
+        "y": 240,
         "wires": []
-    },
-    {
-        "id": "d3685399ba90386b",
-        "type": "function",
-        "z": "1f7fe0dff64a8457",
-        "name": "Keep raw data",
-        "func": "return {topic: 'rawData', payload: msg.payload}",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 900,
-        "y": 400,
-        "wires": [
-            [
-                "394bf3cb66669c20"
-            ]
-        ]
-    },
-    {
-        "id": "394bf3cb66669c20",
-        "type": "join",
-        "z": "1f7fe0dff64a8457",
-        "name": "",
-        "mode": "auto",
-        "build": "object",
-        "property": "payload",
-        "propertyType": "msg",
-        "key": "topic",
-        "joiner": "\\n",
-        "joinerType": "str",
-        "accumulate": true,
-        "timeout": "",
-        "count": "",
-        "reduceRight": false,
-        "reduceExp": "",
-        "reduceInit": "",
-        "reduceInitType": "",
-        "reduceFixup": "",
-        "x": 1450,
-        "y": 400,
-        "wires": [
-            [
-                "e07acc2fa9a81b65"
-            ]
-        ]
     },
     {
         "id": "4e56a7c5ba6fbca8",
@@ -699,11 +632,11 @@
         "sqlquery": "msg.topic",
         "sql": "",
         "name": "Save aggregated data",
-        "x": 1200,
-        "y": 340,
+        "x": 440,
+        "y": 380,
         "wires": [
             [
-                "394bf3cb66669c20"
+                "26cac60adb2ce17c"
             ]
         ]
     },
@@ -715,10 +648,29 @@
         "sqlquery": "msg.topic",
         "sql": "",
         "name": "Mark data as aggregated",
-        "x": 1730,
-        "y": 400,
+        "x": 530,
+        "y": 660,
         "wires": [
             []
+        ]
+    },
+    {
+        "id": "26cac60adb2ce17c",
+        "type": "function",
+        "z": "1f7fe0dff64a8457",
+        "name": "Prepare query for marking data as aggregated",
+        "func": "let topic = \"UPDATE data SET aggregatedAt = datetime() WHERE id in \"\ntopic += \"(\" + msg.data_ids.map((_, i) => \"$id\" + i).join(\",\") +  \")\"\nreturn {\n    topic,\n    payload: msg.data_ids\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 600,
+        "y": 580,
+        "wires": [
+            [
+                "e07acc2fa9a81b65"
+            ]
         ]
     },
     {
@@ -726,7 +678,7 @@
         "type": "sqlite",
         "z": "e01a8318facb448e",
         "mydb": "c628f8e8d8157672",
-        "sqlquery": "msg.topic",
+        "sqlquery": "fixed",
         "sql": "",
         "name": "Read aggregated data (max 100)",
         "x": 380,
@@ -763,7 +715,7 @@
         "propertyType": "jsonata",
         "rules": [
             {
-                "t": "gt",
+                "t": "eq",
                 "v": "0",
                 "vt": "str"
             },
@@ -778,10 +730,10 @@
         "y": 180,
         "wires": [
             [
-                "33346f24098cc5e7"
+                "e820de3e4f6f9668"
             ],
             [
-                "e820de3e4f6f9668"
+                "33346f24098cc5e7"
             ]
         ]
     },
@@ -796,7 +748,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 740,
+        "x": 300,
         "y": 280,
         "wires": [
             [
@@ -849,7 +801,7 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 930,
+        "x": 490,
         "y": 280,
         "wires": [
             [
@@ -865,7 +817,7 @@
         "sqlquery": "msg.topic",
         "sql": "",
         "name": "Mark data as sent",
-        "x": 1150,
+        "x": 710,
         "y": 280,
         "wires": [
             []
@@ -887,8 +839,8 @@
         ],
         "repeat": "43200",
         "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
+        "once": true,
+        "onceDelay": "10",
         "topic": "",
         "payload": "",
         "payloadType": "date",
