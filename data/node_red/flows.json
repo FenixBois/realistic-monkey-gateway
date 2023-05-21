@@ -227,6 +227,17 @@
         "className": ""
     },
     {
+        "id": "fb1b03b9c0ea0a75",
+        "type": "ui_group",
+        "name": "Data in time",
+        "tab": "4da2cc2d119258c0",
+        "order": 3,
+        "disp": false,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
         "id": "da8c1ee988299137",
         "type": "ui_gauge",
         "z": "24bcb24c3775858e",
@@ -565,7 +576,8 @@
         "wires": [
             [
                 "dffa6e7a48b405c5",
-                "ef66a611cf8be683"
+                "ef66a611cf8be683",
+                "c310ab6f2495195b"
             ]
         ]
     },
@@ -583,7 +595,7 @@
         "layout": "row-spread",
         "className": "",
         "x": 890,
-        "y": 1080,
+        "y": 1100,
         "wires": []
     },
     {
@@ -617,7 +629,7 @@
         "layout": "row-spread",
         "className": "",
         "x": 830,
-        "y": 1020,
+        "y": 1060,
         "wires": []
     },
     {
@@ -653,6 +665,166 @@
         "x": 1010,
         "y": 920,
         "wires": []
+    },
+    {
+        "id": "5424d9412c867365",
+        "type": "ui_chart",
+        "z": "24bcb24c3775858e",
+        "name": "Temperature graph",
+        "group": "fb1b03b9c0ea0a75",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "label": "Temperature",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "bezier",
+        "nodata": "",
+        "dot": true,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "50",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 870,
+        "y": 1260,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5533ac7519532ea9",
+        "type": "function",
+        "z": "24bcb24c3775858e",
+        "name": "Prepare temp graph data",
+        "func": "const data = [msg.payload.map(({date, temperature: y}) => ({y, x: Date.parse(date)}))];\nreturn {\n    payload: [{\n        data,\n        series: [\"Temperature\"],\n        labels: [\"Temp\"]\n    }]\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 610,
+        "y": 1260,
+        "wires": [
+            [
+                "5424d9412c867365"
+            ]
+        ]
+    },
+    {
+        "id": "c310ab6f2495195b",
+        "type": "sqlite",
+        "z": "24bcb24c3775858e",
+        "mydb": "c628f8e8d8157672",
+        "sqlquery": "fixed",
+        "sql": "SELECT humidity, temperature, date FROM (\n    SELECT * FROM data ORDER BY date DESC LIMIT 50\n)\nORDER BY date\n",
+        "name": "Get last 50 measured data",
+        "x": 240,
+        "y": 1260,
+        "wires": [
+            [
+                "5533ac7519532ea9",
+                "645ceca0c1152583"
+            ]
+        ]
+    },
+    {
+        "id": "58e14b4e2a73d2f8",
+        "type": "debug",
+        "z": "24bcb24c3775858e",
+        "name": "debug 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 680,
+        "y": 1440,
+        "wires": []
+    },
+    {
+        "id": "645ceca0c1152583",
+        "type": "function",
+        "z": "24bcb24c3775858e",
+        "name": "Prepare humidity graph data",
+        "func": "const data = [msg.payload.map(({ date, humidity: y }) => ({ y, x: Date.parse(date) }))];\nreturn {\n    payload: [{ \n        data,\n        series: [\"Humidity\"],\n        labels: [\"Humidity\"]\n     }]\n}\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 620,
+        "y": 1320,
+        "wires": [
+            [
+                "2201de827a179fe3"
+            ]
+        ]
+    },
+    {
+        "id": "2201de827a179fe3",
+        "type": "ui_chart",
+        "z": "24bcb24c3775858e",
+        "name": "Humidity graph",
+        "group": "fb1b03b9c0ea0a75",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "label": "Humidity",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "bezier",
+        "nodata": "",
+        "dot": true,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "50",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 860,
+        "y": 1320,
+        "wires": [
+            []
+        ]
     },
     {
         "id": "e0eda3726175cf19",
