@@ -48,6 +48,14 @@
         "env": []
     },
     {
+        "id": "f1a2b92512d0677e",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
         "id": "78d678c245e7c6f5",
         "type": "tab",
         "label": "Cleanup",
@@ -238,6 +246,33 @@
         "className": ""
     },
     {
+        "id": "c3ee981889995354",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
         "id": "da8c1ee988299137",
         "type": "ui_gauge",
         "z": "24bcb24c3775858e",
@@ -261,8 +296,8 @@
         "seg2": "",
         "diff": false,
         "className": "",
-        "x": 1120,
-        "y": 160,
+        "x": 1300,
+        "y": 200,
         "wires": []
     },
     {
@@ -289,39 +324,9 @@
         "seg2": "",
         "diff": false,
         "className": "",
-        "x": 1130,
-        "y": 200,
+        "x": 1310,
+        "y": 240,
         "wires": []
-    },
-    {
-        "id": "2fbefff0db13df2e",
-        "type": "inject",
-        "z": "24bcb24c3775858e",
-        "name": "",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "60",
-        "crontab": "",
-        "once": true,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 110,
-        "y": 220,
-        "wires": [
-            [
-                "e8d4af1ce38befd5",
-                "f105ceb239e1df28"
-            ]
-        ]
     },
     {
         "id": "e8d4af1ce38befd5",
@@ -331,12 +336,13 @@
         "sqlquery": "fixed",
         "sql": "SELECT ROUND(temperature, 1) temperature, ROUND(humidity,1) humidity, date FROM data\nORDER BY date DESC\nLIMIT 1",
         "name": "Get latest data",
-        "x": 340,
-        "y": 220,
+        "x": 520,
+        "y": 260,
         "wires": [
             [
                 "83354551b1f1ea28",
-                "87c9fcf7a87fb92f"
+                "87c9fcf7a87fb92f",
+                "cf5add0296f2c165"
             ]
         ]
     },
@@ -351,8 +357,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 680,
-        "y": 220,
+        "x": 860,
+        "y": 260,
         "wires": [
             [
                 "da8c1ee988299137",
@@ -375,8 +381,8 @@
         "format": "No data recorded yet",
         "layout": "row-spread",
         "className": "",
-        "x": 1140,
-        "y": 260,
+        "x": 1320,
+        "y": 300,
         "wires": []
     },
     {
@@ -392,8 +398,8 @@
         "format": "{{msg.payload.date}}",
         "layout": "col-center",
         "className": "",
-        "x": 1160,
-        "y": 120,
+        "x": 1340,
+        "y": 160,
         "wires": []
     },
     {
@@ -402,44 +408,14 @@
         "z": "24bcb24c3775858e",
         "mydb": "c628f8e8d8157672",
         "sqlquery": "fixed",
-        "sql": "SELECT sentAt FROM aggregated_data \nWHERE sentAt IS NOT NULL\nORDER BY sentAt DESC \nLIMIT 1",
-        "name": "Last sent date",
-        "x": 360,
+        "sql": "SELECT MAX(sentAt) sentAt FROM aggregated_data ",
+        "name": "Get last sent date",
+        "x": 1050,
         "y": 720,
         "wires": [
             [
-                "ba774ee376154f3f",
-                "281cce6340e9e0a6"
+                "ec4b7b6f70a227dc"
             ]
-        ]
-    },
-    {
-        "id": "ba774ee376154f3f",
-        "type": "switch",
-        "z": "24bcb24c3775858e",
-        "name": "Show date if we have sent something",
-        "property": "payload.length",
-        "propertyType": "msg",
-        "rules": [
-            {
-                "t": "gte",
-                "v": "1",
-                "vt": "str"
-            },
-            {
-                "t": "eq",
-                "v": "0",
-                "vt": "str"
-            }
-        ],
-        "checkall": "true",
-        "repair": false,
-        "outputs": 2,
-        "x": 690,
-        "y": 720,
-        "wires": [
-            [],
-            []
         ]
     },
     {
@@ -453,12 +429,11 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 710,
-        "y": 280,
+        "x": 890,
+        "y": 360,
         "wires": [
             [
-                "4dc0fe66a23a83f1",
-                "c3d1037fdbcb6049"
+                "4dc0fe66a23a83f1"
             ]
         ]
     },
@@ -466,58 +441,10 @@
         "id": "4dc0fe66a23a83f1",
         "type": "ui_ui_control",
         "z": "24bcb24c3775858e",
-        "name": "",
+        "name": "Show correct data group",
         "events": "all",
-        "x": 980,
-        "y": 320,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "c3d1037fdbcb6049",
-        "type": "debug",
-        "z": "24bcb24c3775858e",
-        "name": "debug 3",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 980,
-        "y": 420,
-        "wires": []
-    },
-    {
-        "id": "281cce6340e9e0a6",
-        "type": "function",
-        "z": "24bcb24c3775858e",
-        "name": "Configure last data sent group showing",
-        "func": "\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 700,
-        "y": 620,
-        "wires": [
-            [
-                "310888fe379e48e5"
-            ]
-        ]
-    },
-    {
-        "id": "310888fe379e48e5",
-        "type": "ui_ui_control",
-        "z": "24bcb24c3775858e",
-        "name": "",
-        "events": "all",
-        "x": 980,
-        "y": 620,
+        "x": 1350,
+        "y": 360,
         "wires": [
             []
         ]
@@ -530,8 +457,8 @@
         "sqlquery": "fixed",
         "sql": "SELECT COUNT() count FROM aggregated_data\nWHERE sentAt IS NULL",
         "name": "Get number of pending data to be sent",
-        "x": 640,
-        "y": 880,
+        "x": 1120,
+        "y": 600,
         "wires": [
             [
                 "0653ae5b055fde84"
@@ -546,38 +473,11 @@
         "sqlquery": "fixed",
         "sql": "SELECT COUNT() count FROM aggregated_data\nWHERE sentAt IS NOT NULL",
         "name": "Get number of saved sent data",
-        "x": 610,
-        "y": 940,
+        "x": 1090,
+        "y": 660,
         "wires": [
             [
                 "d575331e2caa17ba"
-            ]
-        ]
-    },
-    {
-        "id": "f7b846bcdc155aee",
-        "type": "inject",
-        "z": "24bcb24c3775858e",
-        "name": "On startup and every minute",
-        "props": [
-            {
-                "p": "payload"
-            }
-        ],
-        "repeat": "60",
-        "crontab": "",
-        "once": true,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 210,
-        "y": 880,
-        "wires": [
-            [
-                "dffa6e7a48b405c5",
-                "ef66a611cf8be683",
-                "c310ab6f2495195b"
             ]
         ]
     },
@@ -594,8 +494,8 @@
         "format": "{{msg.payload}}",
         "layout": "row-spread",
         "className": "",
-        "x": 890,
-        "y": 1100,
+        "x": 990,
+        "y": 1620,
         "wires": []
     },
     {
@@ -611,8 +511,8 @@
         "format": "",
         "layout": "row-spread",
         "className": "",
-        "x": 900,
-        "y": 1140,
+        "x": 1000,
+        "y": 1660,
         "wires": []
     },
     {
@@ -628,8 +528,8 @@
         "format": "{{msg.payload}}",
         "layout": "row-spread",
         "className": "",
-        "x": 830,
-        "y": 1060,
+        "x": 930,
+        "y": 1580,
         "wires": []
     },
     {
@@ -641,12 +541,12 @@
         "width": 0,
         "height": 0,
         "name": "",
-        "label": "Number of records waiting to be sent",
+        "label": "Number of aggregated records waiting to be sent",
         "format": "{{msg.payload[0].count}}",
         "layout": "row-spread",
         "className": "",
-        "x": 1050,
-        "y": 880,
+        "x": 1570,
+        "y": 600,
         "wires": []
     },
     {
@@ -658,12 +558,12 @@
         "width": 0,
         "height": 0,
         "name": "",
-        "label": "Number of sent records",
+        "label": "Number of sent aggregated records stored on the gateway",
         "format": "{{msg.payload[0].count}}",
         "layout": "row-spread",
         "className": "",
-        "x": 1010,
-        "y": 920,
+        "x": 1600,
+        "y": 660,
         "wires": []
     },
     {
@@ -704,8 +604,8 @@
         "outputs": 1,
         "useDifferentColor": false,
         "className": "",
-        "x": 870,
-        "y": 1260,
+        "x": 1150,
+        "y": 920,
         "wires": [
             []
         ]
@@ -721,8 +621,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 610,
-        "y": 1260,
+        "x": 890,
+        "y": 920,
         "wires": [
             [
                 "5424d9412c867365"
@@ -737,31 +637,14 @@
         "sqlquery": "fixed",
         "sql": "SELECT humidity, temperature, date FROM (\n    SELECT * FROM data ORDER BY date DESC LIMIT 50\n)\nORDER BY date\n",
         "name": "Get last 50 measured data",
-        "x": 240,
-        "y": 1260,
+        "x": 520,
+        "y": 920,
         "wires": [
             [
                 "5533ac7519532ea9",
                 "645ceca0c1152583"
             ]
         ]
-    },
-    {
-        "id": "58e14b4e2a73d2f8",
-        "type": "debug",
-        "z": "24bcb24c3775858e",
-        "name": "debug 4",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 680,
-        "y": 1440,
-        "wires": []
     },
     {
         "id": "645ceca0c1152583",
@@ -774,8 +657,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 620,
-        "y": 1320,
+        "x": 900,
+        "y": 980,
         "wires": [
             [
                 "2201de827a179fe3"
@@ -820,11 +703,168 @@
         "outputs": 1,
         "useDifferentColor": false,
         "className": "",
-        "x": 860,
-        "y": 1320,
+        "x": 1140,
+        "y": 980,
         "wires": [
             []
         ]
+    },
+    {
+        "id": "ec4b7b6f70a227dc",
+        "type": "ui_text",
+        "z": "24bcb24c3775858e",
+        "group": "dd77e61d13dc3b19",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Last upload date",
+        "format": "{{msg.payload[0].sentAt || 'Never'}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1470,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "d522702f2dc649e9",
+        "type": "link in",
+        "z": "24bcb24c3775858e",
+        "name": "data saved",
+        "links": [
+            "5cb760db6ba7ec49"
+        ],
+        "x": 345,
+        "y": 300,
+        "wires": [
+            [
+                "e8d4af1ce38befd5"
+            ]
+        ]
+    },
+    {
+        "id": "26e8d8fdf8c0da80",
+        "type": "link in",
+        "z": "24bcb24c3775858e",
+        "name": "Data aggregated",
+        "links": [
+            "cff43049a8a4020b"
+        ],
+        "x": 405,
+        "y": 580,
+        "wires": [
+            [
+                "b0b2ee1ad514bb17"
+            ]
+        ]
+    },
+    {
+        "id": "b0b2ee1ad514bb17",
+        "type": "function",
+        "z": "24bcb24c3775858e",
+        "name": "NOOP data aggregated or sent",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 710,
+        "y": 600,
+        "wires": [
+            [
+                "ef66a611cf8be683",
+                "dffa6e7a48b405c5",
+                "f105ceb239e1df28",
+                "cf5add0296f2c165"
+            ]
+        ]
+    },
+    {
+        "id": "182f988593ce7fcb",
+        "type": "link in",
+        "z": "24bcb24c3775858e",
+        "name": "data sent",
+        "links": [
+            "17927131f29eb90f"
+        ],
+        "x": 405,
+        "y": 640,
+        "wires": [
+            [
+                "b0b2ee1ad514bb17"
+            ]
+        ]
+    },
+    {
+        "id": "e1afe9132822bd6d",
+        "type": "inject",
+        "z": "24bcb24c3775858e",
+        "name": "On startup and every minute",
+        "props": [],
+        "repeat": "60",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 170,
+        "y": 620,
+        "wires": [
+            [
+                "b0b2ee1ad514bb17",
+                "e8d4af1ce38befd5",
+                "c310ab6f2495195b"
+            ]
+        ]
+    },
+    {
+        "id": "166a106940e078b6",
+        "type": "link in",
+        "z": "24bcb24c3775858e",
+        "name": "Data saved",
+        "links": [
+            "5cb760db6ba7ec49"
+        ],
+        "x": 345,
+        "y": 960,
+        "wires": [
+            [
+                "c310ab6f2495195b"
+            ]
+        ]
+    },
+    {
+        "id": "cf5add0296f2c165",
+        "type": "sqlite",
+        "z": "24bcb24c3775858e",
+        "mydb": "c628f8e8d8157672",
+        "sqlquery": "fixed",
+        "sql": "SELECT COUNT() count FROM data\nWHERE aggregatedAt IS NULL ",
+        "name": "Get number of data pending to be uploaded",
+        "x": 950,
+        "y": 440,
+        "wires": [
+            [
+                "cec9b73249500372"
+            ]
+        ]
+    },
+    {
+        "id": "cec9b73249500372",
+        "type": "ui_text",
+        "z": "24bcb24c3775858e",
+        "group": "9845937855a560ce",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Number of raw records waiting to be aggregated",
+        "format": "{{msg.payload[0].count}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1430,
+        "y": 440,
+        "wires": []
     },
     {
         "id": "e0eda3726175cf19",
@@ -937,7 +977,7 @@
         "y": 180,
         "wires": [
             [
-                "81c267c34c603b54"
+                "e3ff34263f65517e"
             ]
         ]
     },
@@ -962,7 +1002,7 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 110,
+        "x": 150,
         "y": 120,
         "wires": [
             [
@@ -1008,7 +1048,7 @@
         "sqlquery": "fixed",
         "sql": "SELECT value FROM settings WHERE id='authcode'",
         "name": "Read authcode",
-        "x": 380,
+        "x": 420,
         "y": 120,
         "wires": [
             [
@@ -1027,7 +1067,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 610,
+        "x": 650,
         "y": 120,
         "wires": [
             [
@@ -1086,9 +1126,25 @@
         "targetType": "jsonata",
         "statusVal": "",
         "statusType": "auto",
-        "x": 870,
+        "x": 910,
         "y": 120,
         "wires": []
+    },
+    {
+        "id": "e3ff34263f65517e",
+        "type": "link call",
+        "z": "a456f3115b876e96",
+        "name": "Server conn successful",
+        "links": [],
+        "linkType": "static",
+        "timeout": "30",
+        "x": 1130,
+        "y": 180,
+        "wires": [
+            [
+                "81c267c34c603b54"
+            ]
+        ]
     },
     {
         "id": "ed86ef97bebd5f05",
@@ -1114,7 +1170,8 @@
         "y": 300,
         "wires": [
             [
-                "f7a84e6bd0a4370c"
+                "f7a84e6bd0a4370c",
+                "5cb760db6ba7ec49"
             ]
         ]
     },
@@ -1157,23 +1214,18 @@
         "id": "115e425a0919973d",
         "type": "inject",
         "z": "5cd67813776a9297",
-        "name": "Every 2 minutes",
+        "name": "Every 10 seconds",
         "props": [
-            {
-                "p": "payload"
-            },
             {
                 "p": "topic",
                 "vt": "str"
             }
         ],
-        "repeat": "120",
+        "repeat": "10",
         "crontab": "",
         "once": false,
         "onceDelay": 0.1,
         "topic": "",
-        "payload": "",
-        "payloadType": "date",
         "x": 170,
         "y": 360,
         "wires": [
@@ -1229,17 +1281,31 @@
         "wires": []
     },
     {
+        "id": "5cb760db6ba7ec49",
+        "type": "link out",
+        "z": "5cd67813776a9297",
+        "name": "data saved",
+        "mode": "link",
+        "links": [
+            "d522702f2dc649e9",
+            "166a106940e078b6"
+        ],
+        "x": 1185,
+        "y": 380,
+        "wires": []
+    },
+    {
         "id": "14c81525869cc432",
         "type": "inject",
         "z": "1f7fe0dff64a8457",
-        "name": "Every 10s",
+        "name": "Every 2 minutes",
         "props": [],
-        "repeat": "",
+        "repeat": "120",
         "crontab": "",
-        "once": false,
+        "once": true,
         "onceDelay": 0.1,
         "topic": "",
-        "x": 100,
+        "x": 130,
         "y": 60,
         "wires": [
             [
@@ -1274,7 +1340,7 @@
         "sqlquery": "fixed",
         "sql": "SELECT *\nFROM data\nWHERE aggregatedAt IS NULL\n  AND (unixepoch('now') - unixepoch(date)) >= 120\n  AND\n              (unixepoch(date) - (SELECT unixepoch(MIN(date))\n                                  FROM data\n                                  WHERE aggregatedAt IS NULL)\n                  )  <= 120;",
         "name": "Fetch 2 minutes of data since first not aggregated data, only want",
-        "x": 460,
+        "x": 580,
         "y": 60,
         "wires": [
             [
@@ -1357,7 +1423,9 @@
         "x": 850,
         "y": 380,
         "wires": [
-            []
+            [
+                "cff43049a8a4020b"
+            ]
         ]
     },
     {
@@ -1378,6 +1446,19 @@
                 "e07acc2fa9a81b65"
             ]
         ]
+    },
+    {
+        "id": "cff43049a8a4020b",
+        "type": "link out",
+        "z": "1f7fe0dff64a8457",
+        "name": "Data aggregated",
+        "mode": "link",
+        "links": [
+            "26e8d8fdf8c0da80"
+        ],
+        "x": 1085,
+        "y": 400,
+        "wires": []
     },
     {
         "id": "1b96ac2df139d54c",
@@ -1476,14 +1557,14 @@
                 "vt": "str"
             }
         ],
-        "repeat": "",
+        "repeat": "30",
         "crontab": "",
-        "once": false,
+        "once": true,
         "onceDelay": 0.1,
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 80,
+        "x": 90,
         "y": 180,
         "wires": [
             [
@@ -1526,7 +1607,9 @@
         "x": 770,
         "y": 480,
         "wires": [
-            []
+            [
+                "17927131f29eb90f"
+            ]
         ]
     },
     {
@@ -1582,6 +1665,53 @@
                 "e219bd3555195adb"
             ]
         ]
+    },
+    {
+        "id": "17927131f29eb90f",
+        "type": "link out",
+        "z": "e01a8318facb448e",
+        "name": "Data sent",
+        "mode": "link",
+        "links": [
+            "182f988593ce7fcb"
+        ],
+        "x": 1005,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "7a4eef0507a87b27",
+        "type": "catch",
+        "z": "e01a8318facb448e",
+        "name": "Request failed",
+        "scope": [
+            "adcad3466c8f421b"
+        ],
+        "uncaught": false,
+        "x": 410,
+        "y": 560,
+        "wires": [
+            [
+                "0dd37163377d4828"
+            ]
+        ]
+    },
+    {
+        "id": "0dd37163377d4828",
+        "type": "debug",
+        "z": "e01a8318facb448e",
+        "name": "Debug request failed",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 660,
+        "y": 560,
+        "wires": []
     },
     {
         "id": "ba81707626e4bec4",
