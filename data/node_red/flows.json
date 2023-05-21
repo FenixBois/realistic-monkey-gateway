@@ -1264,6 +1264,16 @@
         "wires": []
     },
     {
+        "id": "4a04764a72436f37",
+        "type": "comment",
+        "z": "a456f3115b876e96",
+        "name": "What if token is deleted on server?",
+        "info": "This gateway becomes a bit bricked. \nIt will still collect data, but will not be able to upload them.\nIs this behavior ok?",
+        "x": 440,
+        "y": 180,
+        "wires": []
+    },
+    {
         "id": "ed86ef97bebd5f05",
         "type": "serial in",
         "z": "5cd67813776a9297",
